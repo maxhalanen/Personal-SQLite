@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 
+
+const int HEADER_BYTE_SIZE = 100;
+
 int main(int argc, char* argv[]) {
     // Flush after every std::cout / std::cerr
     std::cout << std::unitbuf;
@@ -31,8 +34,16 @@ int main(int argc, char* argv[]) {
         database_file.read(buffer, 2);
         
         unsigned short page_size = (static_cast<unsigned char>(buffer[1]) | (static_cast<unsigned char>(buffer[0]) << 8));
-        
+
         std::cout << "database page size: " << page_size << std::endl;
+
+        database_file.seekg(HEADER_BYTE_SIZE + 3); // +3 for byte location of cell numbers 1.6 B-Tree Pages
+        database_file.read(buffer, 2);
+
+        unsigned short page_numbers = (static_cast<unsigned char>(buffer[1]) | (static_cast<unsigned char>(buffer[0]) << 8));
+
+        std::cout << "number of tables: " << page_numbers << std::endl; 
+      
     }
 
     return 0;
